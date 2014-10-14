@@ -16,19 +16,19 @@
 
 感謝您的使用與推廣～～勞力！承蒙！
 """
-from unittest.case import TestCase
 from 臺灣言語工具.解析整理.文章粗胚 import 文章粗胚
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from math import log10
 from 臺灣言語工具.表單.實際語句連詞 import 實際語句連詞
 from 臺灣言語工具.解析整理.參數錯誤 import 參數錯誤
+from 試驗.表單.語句連詞試驗 import 語句連詞試驗
 '''
 甲乙丙
 數量=C(丙), C(乙丙), C(甲乙丙)
 機率=P(丙), P(乙丙), P(甲乙丙)
 條件=P(丙), P(乙丙)/P(乙), P(甲乙丙)/P(甲乙)
 '''
-class 實際語句連詞試驗(TestCase):
+class 實際語句連詞試驗(語句連詞試驗):
 	忍受 = 1e-10
 	def setUp(self):
 		self.粗胚 = 文章粗胚()
@@ -158,7 +158,7 @@ class 實際語句連詞試驗(TestCase):
 		self.assertEqual(連詞.條件([連詞.開始(), self.你物件]),
 			[log10(5 / 32), log10(4 / 5), ])
 	
-	def test_媠媠巧靚(self):
+	def 媠媠巧靚物件(self):
 		'''
 		srilm的結果
 		原本檔案sui2：
@@ -188,18 +188,32 @@ class 實際語句連詞試驗(TestCase):
 		
 		\end\
 		'''
-		連詞 = self.型態(3)
-		媠媠巧靚 = self.分析器.建立組物件('sui2 sui2 khiau2 tsiang5')
-		連詞.看(媠媠巧靚)
-		self.assertEqual(連詞.條件(媠媠巧靚.內底詞),
+		self.連詞 = self.型態(3)
+		self.媠媠巧靚 = self.分析器.建立組物件('sui2 sui2 khiau2 tsiang5')
+		self.連詞.看(self.媠媠巧靚)
+	def test_媠媠巧靚_條件(self):
+		self.媠媠巧靚物件()
+		self.assertEqual(self.連詞.條件(self.媠媠巧靚.內底詞),
 			[log10(1 / 6), log10(1 / 1), log10(1 / 1), ])
-		self.assertEqual(連詞.條件(媠媠巧靚.內底詞[:-1]),
+		self.assertEqual(self.連詞.條件(self.媠媠巧靚.內底詞[:-1]),
 			[log10(1 / 6), log10(1 / 2), log10(1 / 1), ])
-		self.assertEqual(連詞.條件(媠媠巧靚.內底詞[:-2]),
+		self.assertEqual(self.連詞.條件(self.媠媠巧靚.內底詞[:-2]),
 			[log10(2 / 6), log10(1 / 2), ])
-		self.assertEqual(連詞.條件([連詞.開始()] + 媠媠巧靚.內底詞[:-2]),
+		self.assertEqual(self.連詞.條件([self.連詞.開始()] + self.媠媠巧靚.內底詞[:-2]),
 			[log10(2 / 6), log10(1 / 2), log10(1 / 1), ])
 		
+	def test_媠媠巧靚_詞陣列(self):
+		self.媠媠巧靚物件()
+		self.陣列比較(list(self.連詞.評詞陣列分(self.媠媠巧靚.內底詞)),
+			[log10(2 / 5), log10(1 / 2), log10(1 / 2), -0.0], self.忍受)
+		self.陣列比較(list(self.連詞.評詞陣列分(self.媠媠巧靚.內底詞, 開始的所在=1)),
+			[log10(1 / 2), log10(1 / 2), -0.0], self.忍受)
+		
+	def test_媠媠巧靚_評分(self):
+		self.媠媠巧靚物件()
+		self.陣列比較(list(self.連詞.評詞陣列分(self.媠媠巧靚.內底詞)),
+			[-0.0, log10(1 / 2), log10(1 / 2), -0.0, -0.0], self.忍受)
+
 	def test_看物件時愛先斷句(self):
 		兩句連詞 = self.型態(3)
 		型一 = '今仔日我請你食飯。'
@@ -231,15 +245,19 @@ class 實際語句連詞試驗(TestCase):
 			[0])
 		self.assertEqual(連詞.機率([連詞.開始()]),
 			[連詞.無看過])
+		self.assertEqual(連詞.條件([連詞.開始()]),
+			[連詞.無看過])
 		self.assertEqual(連詞.條件([連詞.開始(), self.今仔日物件, 連詞.結束()]),
-			[log10(1)])
+			[連詞.無看過, 連詞.無看過, 連詞.無看過])
 		連詞.看(self.我請你物件)
 		self.assertEqual(連詞.數量([連詞.開始()]),
 			[1])
 		self.assertEqual(連詞.機率([連詞.開始()]),
 			[log10(1 / 5)])
+		self.assertEqual(連詞.條件([連詞.開始()]),
+			[log10(1 / 5)])
 		self.assertEqual(連詞.條件([連詞.開始(), self.今仔日物件, 連詞.結束()]),
-			[log10(1)])
+			[log10(1 / 5), 連詞.無看過, 連詞.無看過])
 
 	def test_零連詞(self):
 		self.assertRaises(參數錯誤, self.型態, 0)

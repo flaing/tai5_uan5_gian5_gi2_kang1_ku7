@@ -16,19 +16,18 @@
 
 感謝您的使用與推廣～～勞力！承蒙！
 """
-from unittest.case import TestCase
 from 臺灣言語工具.解析整理.拆文分析器 import 拆文分析器
 from math import log10
 import os
 from 臺灣言語工具.表單.肯語句連詞 import 肯語句連詞
-import itertools
+from 試驗.表單.語句連詞試驗 import 語句連詞試驗
 '''
 甲乙丙
 數量=C(丙), C(乙丙), C(甲乙丙)
 機率=P(丙), P(乙丙), P(甲乙丙)
 條件=P(丙), P(乙丙)/P(乙), P(甲乙丙)/P(甲乙)
 '''
-class 肯語句連詞試驗(TestCase):
+class 肯語句連詞試驗(語句連詞試驗):
 	忍受 = 1e-7
 	def setUp(self):
 		self.分析器 = 拆文分析器()
@@ -77,7 +76,3 @@ class 肯語句連詞試驗(TestCase):
 		self.assertEqual(self.媠媠巧靚連詞.上濟詞數(), 3)
 		self.陣列比較(list(self.媠媠巧靚連詞.評分(self.媠媠巧靚組物件)),
 			[-0.0, log10(1 / 2), log10(1 / 2), -0.0, -0.0], self.忍受)
-
-	def 陣列比較(self, 結果陣列, 答案陣列, 範圍):
-		for 結果, 答案 in itertools.zip_longest(結果陣列, 答案陣列):
-			self.assertAlmostEqual(結果, 答案, delta=範圍)
